@@ -1,4 +1,5 @@
 name: E2E Tests (Website)
+
 on:
   push:
     branches:
@@ -6,33 +7,59 @@ on:
   pull_request:
     branches:
       - main
+
 jobs:
-  test-e2e:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Start services
-        run: docker compose --profile ci up --build -d
-      - name: Run e2e tests
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy
+        uses: vercel/github-action@v2.4.0
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_AUTH_TOKEN: ${{ secrets.VERCEL_AUTH_TOKEN }}
+
+      - name: Run E2E tests
         uses: cypress-io/github-action@v5.0.2
         with:
           browser: chrome
-          working-directory: website
+          headed: true
+          # add this line to avoid restarting the browser on each test run
+          # spec-version: 2
+          # add this line to use the default spec-version
+          # spec-version: 2
+          # add this line to specify a path for the Cypress install
+          # cypress-version: 9.6.0
+          # add this line to include the spec-version and cypress-version in the artifact name
+          artifacts:
+            path: cypress
+            name: cypress-${spec-version}-${cypress-version}
+
       - name: Upload test artifacts
         uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: cypress-screenshots
           path: website/cypress/screenshots
+
       - name: cypress-videos
         path: website/cypress/videos
+
       - name: Send notification
         uses: actions/send-notification@v3
         with:
-          recipients:
-            - my-email@example.com
-          subject: E2E Tests Failed
-          body: 'E2E tests failed. Check the screenshots and videos in the artifacts.'
+        recipients:
+          - my-email@example.com
+        subject: E2E Tests Failed
+        body: 'E2E tests failed. Check the screenshots and videos in the artifacts.'
           icons:
             - google-chrome
