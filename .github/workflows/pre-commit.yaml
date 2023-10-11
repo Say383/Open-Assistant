@@ -40,23 +40,4 @@ jobs:
           # add this line to specify a path for the Cypress install
           # cypress-version: 9.6.0
           # add this line to include the spec-version and cypress-version in the artifact name
-          artifacts:
-            path: cypress
-            name: cypress-${spec-version}-${cypress-version}
-
-      - name: Upload test artifacts
-        uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: cypress-screenshots
-          path: website/cypress/screenshots
-
-      - name: Send notification
-        uses: actions/send-notification@v3
-        with:
-        recipients:
-          - my-email@example.com
-        subject: E2E Tests Failed
-        body: 'E2E tests failed. Check the screenshots and videos in the artifacts.'
-          icons:
-            - google-chrome
+          
