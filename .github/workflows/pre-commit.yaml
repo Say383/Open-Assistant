@@ -1,4 +1,4 @@
-name: pre-commit
+name: Pre-Commit
 
 on:
   workflow_call:
@@ -8,22 +8,29 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-      # in case of PR, check out the PR's head branch
+      # Check out the appropriate branch
       - uses: actions/checkout@v3
         if: github.event_name == 'pull_request_target'
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-
-      # in case of push, check out the main branch
+        env:
+          COMMIT_MESSAGE: "Run pre-commit"
       - uses: actions/checkout@v3
         if: github.event_name != 'pull_request_target'
+        env:
+          COMMIT_MESSAGE: "Run pre-commit"
 
+      # Set up Python
       - uses: actions/setup-python@v4
         with:
           python-version: "3.10"
           cache: "pip"
           cache-dependency-path: "**/requirements*.txt"
+
+      # Run pre-commit
       - uses: pre-commit/action@v3.0.0
+
+      # Post PR comment on failure
       - name: Post PR comment on failure
         if: failure() && github.event_name == 'pull_request_target'
         uses: peter-evans/create-or-update-comment@v2
