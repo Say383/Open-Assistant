@@ -1,4 +1,4 @@
--name: E2E Tests (Website)
+- name: E2E Tests (Website)
   on:
     push:
       branches:
