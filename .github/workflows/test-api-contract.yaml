@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "oasst-shared/**"
-      - "backend/**"
-      - "website/**"
   pull_request:
+    branches:
+      - main
     paths:
       - "oasst-shared/**"
       - "backend/**"
@@ -28,14 +26,15 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
+          cache: "yarn"
 
       - run: pip install ./oasst-shared[dev]
 
-      - run: pip install ./oasst-data[dev]
+      - run: yarn install ./oasst-data[dev]
 
       - run: cd backend && pip install -r requirements.txt
 
-      - run: cd website && npm ci
+      - run: cd website && yarn ci
 
       - run: ./scripts/backend-development/start-mock-server.sh
 
