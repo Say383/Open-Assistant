@@ -14,4 +14,4 @@ jobs:
       image-name: oasst-postgres
       context: ./docker/oasst-postgres
       dockerfile: docker/oasst-postgres/Dockerfile
-      build-args: ""
+      build-args: --build-arg MY_VARIABLE_NAME=my_value
