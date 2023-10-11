@@ -51,8 +51,6 @@ jobs:
           name: cypress-screenshots
           path: website/cypress/screenshots
 
-      - name: cypress-videos
-        path: website/cypress/videos
       - name: Send notification
         uses: actions/send-notification@v3
         with:
